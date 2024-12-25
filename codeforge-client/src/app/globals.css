@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    /* Light mode colors */
+    --background: 0 0% 100%;
+    --foreground: 220 13% 10%;
+ 
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 10%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 10%;
+ 
+    /* Pink to purple gradient colors - same for both themes */
+    --primary-start: 328 85% 64%;  /* Pink */
+    --primary-end: 265 89% 66%;    /* Purple */
+    --primary: 328 85% 64%;
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 220 13% 95%;
+    --secondary-foreground: 220 13% 10%;
+ 
+    --muted: 220 13% 95%;
+    --muted-foreground: 220 9% 40%;
+ 
+    --accent: 220 13% 95%;
+    --accent-foreground: 220 13% 10%;
+ 
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 13% 90%;
+    --input: 220 13% 95%;
+    --ring: 328 85% 64%;
+ 
+    --radius: 0.5rem;
+
+    /* Scrollbar variables - light mode */
+    --scrollbar-size: 8px;
+    --scrollbar-track: hsl(220 13% 95% / 0.5);
+    --scrollbar-thumb: hsl(220 9% 40% / 0.2);
+    --scrollbar-thumb-hover: hsl(220 9% 40% / 0.3);
+  }
+
+  .dark {
+    --background: 220 26% 14%;
+    --foreground: 220 13% 91%;
+ 
+    --card: 220 26% 14%;
+    --card-foreground: 220 13% 91%;
+ 
+    --popover: 220 26% 14%;
+    --popover-foreground: 220 13% 91%;
+ 
+    --secondary: 220 34% 17%;
+    --secondary-foreground: 220 13% 91%;
+ 
+    --muted: 220 34% 17%;
+    --muted-foreground: 220 9% 61%;
+ 
+    --accent: 220 34% 17%;
+    --accent-foreground: 220 13% 91%;
+ 
+    --border: 220 34% 17%;
+    --input: 220 34% 17%;
+
+    /* Scrollbar variables - dark mode */
+    --scrollbar-track: hsl(220 34% 17% / 0.3);
+    --scrollbar-thumb: hsl(220 9% 61% / 0.2);
+    --scrollbar-thumb-hover: hsl(220 9% 61% / 0.3);
+  }
+}
+
+/* Custom Scrollbar Styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 9999px;
+  margin: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  min-height: 40px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Hide scrollbar corner */
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  input::placeholder {
+    @apply text-muted-foreground;
+  }
+}
+
+/* Spring Initializr inspired styles with gradient */
+.radio-group {
+  @apply flex gap-2 p-1 bg-secondary rounded-lg;
+}
+
+.radio-item {
+  @apply flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors
+         data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-[hsl(var(--primary-start))] data-[state=checked]:to-[hsl(var(--primary-end))] data-[state=checked]:text-white
+         data-[state=unchecked]:text-muted-foreground hover:text-foreground;
+}
+
+.input-field {
+  @apply w-full bg-secondary border-0 focus-visible:ring-1 focus-visible:ring-[hsl(var(--primary-start))] text-sm;
+}
+
+.keyboard-shortcut {
+  @apply px-2 py-1 text-xs bg-secondary rounded border border-border text-muted-foreground;
+}
+
+/* Gradient button styles */
+.gradient-button {
+  @apply bg-gradient-to-r from-[hsl(var(--primary-start))] to-[hsl(var(--primary-end))] text-white hover:opacity-90 transition-opacity;
+}
