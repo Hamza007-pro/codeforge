@@ -12,6 +12,7 @@ import { SchemaDesigner } from "./schema-designer";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { useToast } from "./ui/use-toast";
+import {postData} from "@/utils/api";
 
 export function AppGenerator() {
   const [activeTab, setActiveTab] = React.useState("web");
@@ -119,6 +120,27 @@ export function AppGenerator() {
       title: "Project Configuration",
       description: "Check the console for the formatted JSON output",
     });
+
+    // Send the config to the server
+
+    postData("/api/projects/generate", config)
+      .then((data) => {
+        console.log("Success:", data);
+        toast({
+          title: "Project Generated",
+          description: "Check the console for the generated project",
+        });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        toast({
+          title: "Error",
+          description: "Failed to generate the project",
+          variant: "destructive",
+        });
+      }
+    );
+
   };
 
   return (
