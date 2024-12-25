@@ -1,0 +1,54 @@
+{
+  "templateName": "Android MVC",
+  "templateDescription": "Basic Android MVC project template",
+  "projectType": "Mobile Application",
+  "framework": "native",
+  "platform": "android",
+  "architecture": "mvc",
+  "files": [
+    {
+      "path": "app/build.gradle",
+      "template": "build.gradle.template"
+    },
+    {
+      "path": "app/src/main/AndroidManifest.xml",
+      "template": "AndroidManifest.xml.template"
+    },
+    {
+      "path": "app/src/main/java/${packagePath}/MainActivity.java",
+      "template": "MainActivity.java.template"
+    },
+    {
+      "path": "app/src/main/java/${packagePath}/model/User.java",
+      "template": "model/User.java.template"
+    },
+    {
+      "path": "app/src/main/java/${packagePath}/model/Profile.java",
+      "template": "model/Profile.java.template"
+    },
+    {
+      "path": "app/src/main/res/layout/activity_main.xml",
+      "template": "layout/activity_main.xml.template"
+    },
+    {
+      "path": "app/src/main/res/values/strings.xml",
+      "template": "values/strings.xml.template"
+    }
+  ],
+  "dependencies": {
+    "required": [
+      "androidx.appcompat:appcompat:1.6.1",
+      "com.google.android.material:material:1.9.0"
+    ],
+    "optional": {
+      "provider": [
+        "androidx.lifecycle:lifecycle-viewmodel:2.6.1",
+        "androidx.lifecycle:lifecycle-livedata:2.6.1"
+      ],
+      "get_it": [
+        "com.google.dagger:hilt-android:2.44",
+        "com.google.dagger:hilt-android-compiler:2.44"
+      ]
+    }
+  }
+}

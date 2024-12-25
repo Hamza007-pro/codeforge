@@ -1,146 +1,134 @@
 "use client";
 
 import * as React from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, Package } from "lucide-react";
+import { Info } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useProjectStore } from "@/lib/store";
+import { api } from "@/lib/api";
+import { Dependency } from "@/lib/types";
+import { LoadingSpinner } from "./ui/loading-spinner";
 
-const NPM_PACKAGES = [
-  {
-    name: "@tanstack/react-query",
-    description: "Powerful asynchronous state management",
-    version: "5.0.0",
-    category: "Development",
-  },
-  {
-    name: "swr",
-    description: "React Hooks for Data Fetching",
-    version: "2.2.0",
-    category: "Development",
-  },
-  {
-    name: "typescript",
-    description: "TypeScript is JavaScript with syntax for types",
-    version: "5.3.0",
-    category: "Development",
-  },
-  {
-    name: "vite",
-    description: "Next Generation Frontend Tooling",
-    version: "5.0.0",
-    category: "Build Tools",
-  },
-  {
-    name: "webpack",
-    description: "Module bundler",
-    version: "5.89.0",
-    category: "Build Tools",
-  },
-];
-
-const FLUTTER_PACKAGES = [
-  {
-    name: "provider",
-    description: "A wrapper around InheritedWidget",
-    version: "6.1.1",
-    category: "State Management",
-  },
-  {
-    name: "get_it",
-    description: "Simple Service Locator",
-    version: "7.6.4",
-    category: "Dependency Injection",
-  },
-];
+interface DependenciesSelectorProps {
+  activeTab: string;
+  selectedPackages: string[];
+  setSelectedPackages: (packages: string[]) => void;
+}
 
 export default function DependenciesSelector({
   activeTab,
   selectedPackages,
   setSelectedPackages,
-}: {
-  activeTab: string;
-  selectedPackages: string[];
-  setSelectedPackages: (packages: string[]) => void;
-}) {
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const packages = activeTab === "web" ? NPM_PACKAGES : FLUTTER_PACKAGES;
+}: DependenciesSelectorProps) {
+  const [dependencies, setDependencies] = React.useState<Dependency[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const filteredPackages = packages.filter((pkg) =>
-    pkg.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Group dependencies by category
+  const dependenciesByCategory = React.useMemo(() => {
+    const grouped: Record<string, Dependency[]> = {};
+    dependencies.forEach((dep) => {
+      if (!grouped[dep.category]) {
+        grouped[dep.category] = [];
+      }
+      grouped[dep.category].push(dep);
+    });
+    return grouped;
+  }, [dependencies]);
 
-  const groupedPackages = filteredPackages.reduce((acc, pkg) => {
-    if (!acc[pkg.category]) {
-      acc[pkg.category] = [];
-    }
-    acc[pkg.category].push(pkg);
-    return acc;
-  }, {} as Record<string, typeof NPM_PACKAGES>);
+  React.useEffect(() => {
+    const fetchDependencies = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const platform = activeTab.toLowerCase();
+        const deps = await api.getDependencies(platform);
+        setDependencies(deps);
+      } catch (err) {
+        setError("Failed to fetch dependencies");
+        console.error(err);
+      }
+      setLoading(false);
+    };
+
+    fetchDependencies();
+  }, [activeTab]);
+
+  const togglePackage = (artifactId: string) => {
+    setSelectedPackages(
+      selectedPackages.includes(artifactId)
+        ? selectedPackages.filter((p) => p !== artifactId)
+        : [...selectedPackages, artifactId]
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-40">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-destructive">
+        <p>{error}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex flex-col space-y-4">
-        <div className="flex items-center gap-2">
-          <Package className="h-5 w-5 text-transparent bg-clip-text bg-gradient-to-r from-[hsl(var(--primary-start))] to-[hsl(var(--primary-end))]" />
-          <h2 className="text-lg font-semibold">Dependencies</h2>
-        </div>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search dependencies..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 input-field"
-          />
-        </div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Dependencies</h2>
+        <Badge variant="secondary">
+          {selectedPackages.length} selected
+        </Badge>
       </div>
 
-      <div className="mt-6 flex-1 overflow-auto">
-        {Object.entries(groupedPackages).map(([category, pkgs]) => (
-          <div key={category} className="mb-6 last:mb-0">
-            <div className="mb-2 text-sm font-medium text-muted-foreground">
-              {category}
-            </div>
-            <div className="space-y-1">
-              {pkgs.map((pkg) => (
-                <button
-                  key={pkg.name}
-                  onClick={() => {
-                    if (selectedPackages.includes(pkg.name)) {
-                      setSelectedPackages(
-                        selectedPackages.filter((name) => name !== pkg.name)
-                      );
-                    } else {
-                      setSelectedPackages([...selectedPackages, pkg.name]);
-                    }
-                  }}
-                  className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors hover:bg-secondary ${
-                    selectedPackages.includes(pkg.name)
-                      ? "bg-gradient-to-r from-[hsl(var(--primary-start))] to-[hsl(var(--primary-end))]"
-                      : "text-foreground hover:text-foreground"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className={`font-medium ${selectedPackages.includes(pkg.name) ? "text-white" : ""}`}>
-                        {pkg.name}
-                      </div>
-                      <div className={`text-xs ${selectedPackages.includes(pkg.name) ? "text-white/80" : "text-muted-foreground"}`}>
-                        {pkg.description}
+      <ScrollArea className="h-[400px] rounded-md border p-4">
+        <div className="space-y-8">
+          {Object.entries(dependenciesByCategory).map(([category, deps]) => (
+            <div key={category} className="space-y-4">
+              <h3 className="font-medium text-sm text-muted-foreground">
+                {category}
+              </h3>
+              <div className="space-y-2">
+                {deps.map((dep) => (
+                  <Card key={dep.artifactId} className="p-4">
+                    <div className="flex items-start gap-4">
+                      <Checkbox
+                        checked={selectedPackages.includes(dep.artifactId)}
+                        onCheckedChange={() => togglePackage(dep.artifactId)}
+                      />
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{dep.name}</span>
+                          <div 
+                            className="group relative inline-block"
+                            title={`${dep.description}\n${dep.groupId}:${dep.artifactId}:${dep.version}`}
+                          >
+                            <Info className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors" />
+                          </div>
+                          <Badge variant="outline" className="ml-auto">
+                            {dep.type}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {dep.description}
+                        </p>
                       </div>
                     </div>
-                    <div className={`text-xs ${selectedPackages.includes(pkg.name) ? "text-white/70" : "text-muted-foreground"}`}>
-                      {pkg.version}
-                    </div>
-                  </div>
-                </button>
-              ))}
+                  </Card>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 }
