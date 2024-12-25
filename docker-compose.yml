@@ -23,11 +23,7 @@ services:
     environment:
       - NEXT_PUBLIC_API_URL=http://backend:8080
       - HOST=0.0.0.0
-      - NODE_ENV=development
-    volumes:
-      - ./nextjs-app:/app  # Mount your local Next.js code
-      - /app/node_modules  # Keep node_modules in container
-      - /app/.next        # Keep .next in container
+      - NODE_ENV=development     
     depends_on:
       - backend
     networks:
