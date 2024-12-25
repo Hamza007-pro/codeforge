@@ -114,7 +114,6 @@ export function AppGenerator() {
 
     // Log the formatted JSON
     console.log("Project Configuration:", JSON.stringify(config, null, 2));
-    console.log("Rani Tzadit");
 
     toast({
       title: "Project Configuration",
