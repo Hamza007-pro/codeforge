@@ -15,7 +15,7 @@ CodeForge is a comprehensive tool designed for generating mobile application cod
 - [Environment Variables](#environment-variables)
 - [Contributing](#contributing)
 - [License](#license)
-- [Videp](#video)
+- [Video](#video)
 ---
 
 ## Project Overview
